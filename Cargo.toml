@@ -1,0 +1,6 @@
+[package]
+name = "binance-spot-sbe"
+version = "2.1.0"
+authors = ["sbetool"]
+description = "Binance Spot API SBE message schema"
+edition = "2021"
