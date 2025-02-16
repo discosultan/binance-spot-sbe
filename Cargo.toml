@@ -4,3 +4,6 @@ version = "2.1.0"
 authors = ["sbetool"]
 description = "Binance Spot API SBE message schema"
 edition = "2021"
+keywords = ["binance", "sbe", "spot"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/discosultan/binance-spot-sbe"
