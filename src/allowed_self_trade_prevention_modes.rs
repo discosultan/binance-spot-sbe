@@ -75,7 +75,13 @@ impl AllowedSelfTradePreventionModes {
 impl core::fmt::Debug for AllowedSelfTradePreventionModes {
     #[inline]
     fn fmt(&self, fmt: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(fmt, "AllowedSelfTradePreventionModes[none(0)={},expire_taker(1)={},expire_maker(2)={},expire_both(3)={}]",
-            self.get_none(),self.get_expire_taker(),self.get_expire_maker(),self.get_expire_both(),)
+        write!(
+            fmt,
+            "AllowedSelfTradePreventionModes[none(0)={},expire_taker(1)={},expire_maker(2)={},expire_both(3)={}]",
+            self.get_none(),
+            self.get_expire_taker(),
+            self.get_expire_maker(),
+            self.get_expire_both(),
+        )
     }
 }

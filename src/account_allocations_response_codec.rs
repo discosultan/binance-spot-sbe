@@ -614,11 +614,7 @@ pub mod decoder {
         #[inline]
         pub fn commission_exponent(&self) -> Option<i8> {
             let value = self.get_buf().get_i8_at(self.offset + 2);
-            if value == -128_i8 {
-                None
-            } else {
-                Some(value)
-            }
+            if value == -128_i8 { None } else { Some(value) }
         }
 
         /// primitive field - 'REQUIRED'

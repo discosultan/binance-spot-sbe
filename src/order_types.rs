@@ -120,7 +120,16 @@ impl OrderTypes {
 impl core::fmt::Debug for OrderTypes {
     #[inline]
     fn fmt(&self, fmt: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(fmt, "OrderTypes[market(0)={},limit(1)={},stop_loss(2)={},stop_loss_limit(3)={},take_profit(4)={},take_profit_limit(5)={},limit_maker(6)={}]",
-            self.get_market(),self.get_limit(),self.get_stop_loss(),self.get_stop_loss_limit(),self.get_take_profit(),self.get_take_profit_limit(),self.get_limit_maker(),)
+        write!(
+            fmt,
+            "OrderTypes[market(0)={},limit(1)={},stop_loss(2)={},stop_loss_limit(3)={},take_profit(4)={},take_profit_limit(5)={},limit_maker(6)={}]",
+            self.get_market(),
+            self.get_limit(),
+            self.get_stop_loss(),
+            self.get_stop_loss_limit(),
+            self.get_take_profit(),
+            self.get_take_profit_limit(),
+            self.get_limit_maker(),
+        )
     }
 }

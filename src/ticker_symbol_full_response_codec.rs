@@ -512,11 +512,7 @@ pub mod decoder {
         #[inline]
         pub fn price_change_percent(&self) -> Option<f32> {
             let value = self.get_buf().get_f32_at(self.offset + 10);
-            if value.is_nan() {
-                None
-            } else {
-                Some(value)
-            }
+            if value.is_nan() { None } else { Some(value) }
         }
 
         /// primitive field - 'OPTIONAL' { null_value: '-9223372036854775808_i64' }
