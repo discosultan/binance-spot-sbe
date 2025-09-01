@@ -281,7 +281,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for WebSocketResponseDecoder<'a> {
+    impl ActingVersion for WebSocketResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version
@@ -456,7 +456,7 @@ pub mod decoder {
             self
         }
 
-        /// group token - Token{signal=BEGIN_GROUP, name='rateLimits', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=19, offset=3, componentTokenCount=31, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        /// group token - Token{signal=BEGIN_GROUP, name='rateLimits', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=19, offset=3, componentTokenCount=33, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         #[inline]
         pub fn parent(&mut self) -> SbeResult<P> {
             self.parent.take().ok_or(SbeErr::ParentNotSet)

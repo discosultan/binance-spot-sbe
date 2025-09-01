@@ -98,7 +98,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for MaxNumIcebergOrdersFilterDecoder<'a> {
+    impl ActingVersion for MaxNumIcebergOrdersFilterDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

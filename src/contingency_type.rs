@@ -3,6 +3,7 @@
 pub enum ContingencyType {
     Oco = 0x1_u8,
     Oto = 0x2_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -12,6 +13,7 @@ impl From<u8> for ContingencyType {
         match v {
             0x1_u8 => Self::Oco,
             0x2_u8 => Self::Oto,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -22,6 +24,7 @@ impl From<ContingencyType> for u8 {
         match v {
             ContingencyType::Oco => 0x1_u8,
             ContingencyType::Oto => 0x2_u8,
+            ContingencyType::NonRepresentable => 0xfe_u8,
             ContingencyType::NullVal => 0xff_u8,
         }
     }
@@ -34,6 +37,7 @@ impl core::str::FromStr for ContingencyType {
         match v {
             "Oco" => Ok(Self::Oco),
             "Oto" => Ok(Self::Oto),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -44,6 +48,7 @@ impl core::fmt::Display for ContingencyType {
         match self {
             Self::Oco => write!(f, "Oco"),
             Self::Oto => write!(f, "Oto"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

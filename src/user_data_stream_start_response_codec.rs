@@ -91,7 +91,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for UserDataStreamStartResponseDecoder<'a> {
+    impl ActingVersion for UserDataStreamStartResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

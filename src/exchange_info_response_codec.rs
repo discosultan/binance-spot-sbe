@@ -401,7 +401,7 @@ pub mod encoder {
 
         #[inline]
         pub fn block_length() -> u16 {
-            17
+            19
         }
 
         #[inline]
@@ -543,15 +543,22 @@ pub mod encoder {
 
         /// REQUIRED enum
         #[inline]
-        pub fn is_spot_trading_allowed(&mut self, value: bool_enum::BoolEnum) {
+        pub fn amend_allowed(&mut self, value: bool_enum::BoolEnum) {
             let offset = self.offset + 13;
             self.get_buf_mut().put_u8_at(offset, value as u8)
         }
 
         /// REQUIRED enum
         #[inline]
-        pub fn is_margin_trading_allowed(&mut self, value: bool_enum::BoolEnum) {
+        pub fn is_spot_trading_allowed(&mut self, value: bool_enum::BoolEnum) {
             let offset = self.offset + 14;
+            self.get_buf_mut().put_u8_at(offset, value as u8)
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn is_margin_trading_allowed(&mut self, value: bool_enum::BoolEnum) {
+            let offset = self.offset + 15;
             self.get_buf_mut().put_u8_at(offset, value as u8)
         }
 
@@ -561,7 +568,7 @@ pub mod encoder {
             &mut self,
             value: self_trade_prevention_mode::SelfTradePreventionMode,
         ) {
-            let offset = self.offset + 15;
+            let offset = self.offset + 16;
             self.get_buf_mut().put_u8_at(offset, value as u8)
         }
 
@@ -570,8 +577,15 @@ pub mod encoder {
             &mut self,
             value: allowed_self_trade_prevention_modes::AllowedSelfTradePreventionModes,
         ) {
-            let offset = self.offset + 16;
+            let offset = self.offset + 17;
             self.get_buf_mut().put_u8_at(offset, value.0)
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn peg_instructions_allowed(&mut self, value: bool_enum::BoolEnum) {
+            let offset = self.offset + 18;
+            self.get_buf_mut().put_u8_at(offset, value as u8)
         }
 
         /// GROUP ENCODER (id=100)
@@ -1145,7 +1159,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for ExchangeInfoResponseDecoder<'a> {
+    impl ActingVersion for ExchangeInfoResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version
@@ -1296,7 +1310,7 @@ pub mod decoder {
             self
         }
 
-        /// group token - Token{signal=BEGIN_GROUP, name='rateLimits', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=11, offset=0, componentTokenCount=28, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        /// group token - Token{signal=BEGIN_GROUP, name='rateLimits', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=11, offset=0, componentTokenCount=30, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         #[inline]
         pub fn parent(&mut self) -> SbeResult<P> {
             self.parent.take().ok_or(SbeErr::ParentNotSet)
@@ -1532,7 +1546,7 @@ pub mod decoder {
             self
         }
 
-        /// group token - Token{signal=BEGIN_GROUP, name='symbols', referencedName='null', description='null', packageName='null', id=102, version=0, deprecated=0, encodedLength=17, offset=-1, componentTokenCount=152, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        /// group token - Token{signal=BEGIN_GROUP, name='symbols', referencedName='null', description='null', packageName='null', id=102, version=0, deprecated=0, encodedLength=19, offset=-1, componentTokenCount=167, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         #[inline]
         pub fn parent(&mut self) -> SbeResult<P> {
             self.parent.take().ok_or(SbeErr::ParentNotSet)
@@ -1638,14 +1652,20 @@ pub mod decoder {
 
         /// REQUIRED enum
         #[inline]
-        pub fn is_spot_trading_allowed(&self) -> bool_enum::BoolEnum {
+        pub fn amend_allowed(&self) -> bool_enum::BoolEnum {
             self.get_buf().get_u8_at(self.offset + 13).into()
         }
 
         /// REQUIRED enum
         #[inline]
-        pub fn is_margin_trading_allowed(&self) -> bool_enum::BoolEnum {
+        pub fn is_spot_trading_allowed(&self) -> bool_enum::BoolEnum {
             self.get_buf().get_u8_at(self.offset + 14).into()
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn is_margin_trading_allowed(&self) -> bool_enum::BoolEnum {
+            self.get_buf().get_u8_at(self.offset + 15).into()
         }
 
         /// REQUIRED enum
@@ -1653,7 +1673,7 @@ pub mod decoder {
         pub fn default_self_trade_prevention_mode(
             &self,
         ) -> self_trade_prevention_mode::SelfTradePreventionMode {
-            self.get_buf().get_u8_at(self.offset + 15).into()
+            self.get_buf().get_u8_at(self.offset + 16).into()
         }
 
         /// BIT SET DECODER
@@ -1662,8 +1682,18 @@ pub mod decoder {
             &self,
         ) -> allowed_self_trade_prevention_modes::AllowedSelfTradePreventionModes {
             allowed_self_trade_prevention_modes::AllowedSelfTradePreventionModes::new(
-                self.get_buf().get_u8_at(self.offset + 16),
+                self.get_buf().get_u8_at(self.offset + 17),
             )
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn peg_instructions_allowed(&self) -> bool_enum::BoolEnum {
+            if self.acting_version() < 1 {
+                return bool_enum::BoolEnum::default();
+            }
+
+            self.get_buf().get_u8_at(self.offset + 18).into()
         }
 
         /// GROUP DECODER (id=100)
@@ -1797,7 +1827,7 @@ pub mod decoder {
             self
         }
 
-        /// group token - Token{signal=BEGIN_GROUP, name='filters', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=0, offset=17, componentTokenCount=12, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        /// group token - Token{signal=BEGIN_GROUP, name='filters', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=0, offset=19, componentTokenCount=12, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         #[inline]
         pub fn parent(&mut self) -> SbeResult<P> {
             self.parent.take().ok_or(SbeErr::ParentNotSet)

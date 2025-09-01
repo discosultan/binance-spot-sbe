@@ -126,7 +126,7 @@ pub mod encoder {
 
         /// VAR_DATA ENCODER - character encoding: 'UTF-8'
         #[inline]
-        pub fn api_key(&mut self, value: &str) {
+        pub fn logged_on_api_key(&mut self, value: &str) {
             let limit = self.get_limit();
             let data_length = value.len();
             self.set_limit(limit + 2 + data_length);
@@ -150,7 +150,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for WebSocketSessionLogoutResponseDecoder<'a> {
+    impl ActingVersion for WebSocketSessionLogoutResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version
@@ -244,16 +244,12 @@ pub mod decoder {
         /// REQUIRED enum
         #[inline]
         pub fn user_data_stream(&self) -> bool_enum::BoolEnum {
-            if self.acting_version() < 1 {
-                return bool_enum::BoolEnum::default();
-            }
-
             self.get_buf().get_u8_at(self.offset + 25).into()
         }
 
         /// VAR_DATA DECODER - character encoding: 'UTF-8'
         #[inline]
-        pub fn api_key_decoder(&mut self) -> (usize, usize) {
+        pub fn logged_on_api_key_decoder(&mut self) -> (usize, usize) {
             let offset = self.get_limit();
             let data_length = self.get_buf().get_u16_at(offset) as usize;
             self.set_limit(offset + 2 + data_length);
@@ -261,7 +257,7 @@ pub mod decoder {
         }
 
         #[inline]
-        pub fn api_key_slice(&'a self, coordinates: (usize, usize)) -> &'a [u8] {
+        pub fn logged_on_api_key_slice(&'a self, coordinates: (usize, usize)) -> &'a [u8] {
             debug_assert!(self.get_limit() >= coordinates.0 + coordinates.1);
             self.get_buf().get_slice_at(coordinates.0, coordinates.1)
         }

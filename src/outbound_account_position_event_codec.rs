@@ -7,7 +7,7 @@ pub use crate::SBE_SCHEMA_ID;
 pub use crate::SBE_SCHEMA_VERSION;
 pub use crate::SBE_SEMANTIC_VERSION;
 
-pub const SBE_BLOCK_LENGTH: u16 = 16;
+pub const SBE_BLOCK_LENGTH: u16 = 18;
 pub const SBE_TEMPLATE_ID: u16 = 607;
 
 pub mod encoder {
@@ -93,6 +93,21 @@ pub mod encoder {
         pub fn update_time(&mut self, value: i64) {
             let offset = self.offset + 8;
             self.get_buf_mut().put_i64_at(offset, value);
+        }
+
+        /// primitive field 'subscriptionId'
+        /// - min value: 0
+        /// - max value: 65534
+        /// - null value: 0xffff_u16
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 16
+        /// - encodedLength: 2
+        /// - version: 1
+        #[inline]
+        pub fn subscription_id(&mut self, value: u16) {
+            let offset = self.offset + 16;
+            self.get_buf_mut().put_u16_at(offset, value);
         }
 
         /// GROUP ENCODER (id=100)
@@ -265,7 +280,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for OutboundAccountPositionEventDecoder<'a> {
+    impl ActingVersion for OutboundAccountPositionEventDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version
@@ -339,6 +354,21 @@ pub mod decoder {
             self.get_buf().get_i64_at(self.offset + 8)
         }
 
+        /// primitive field - 'OPTIONAL' { null_value: '0xffff_u16' }
+        #[inline]
+        pub fn subscription_id(&self) -> Option<u16> {
+            if self.acting_version() < 1 {
+                return None;
+            }
+
+            let value = self.get_buf().get_u16_at(self.offset + 16);
+            if value == 0xffff_u16 {
+                None
+            } else {
+                Some(value)
+            }
+        }
+
         /// GROUP DECODER (id=100)
         #[inline]
         pub fn balances_decoder(self) -> BalancesDecoder<Self> {
@@ -410,7 +440,7 @@ pub mod decoder {
             self
         }
 
-        /// group token - Token{signal=BEGIN_GROUP, name='balances', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=17, offset=16, componentTokenCount=21, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        /// group token - Token{signal=BEGIN_GROUP, name='balances', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=17, offset=18, componentTokenCount=21, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         #[inline]
         pub fn parent(&mut self) -> SbeResult<P> {
             self.parent.take().ok_or(SbeErr::ParentNotSet)

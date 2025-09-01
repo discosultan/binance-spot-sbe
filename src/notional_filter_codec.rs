@@ -157,7 +157,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for NotionalFilterDecoder<'a> {
+    impl ActingVersion for NotionalFilterDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

@@ -121,7 +121,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for PriceTickerSymbolResponseDecoder<'a> {
+    impl ActingVersion for PriceTickerSymbolResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

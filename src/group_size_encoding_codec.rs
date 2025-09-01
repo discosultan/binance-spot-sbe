@@ -73,7 +73,7 @@ pub mod encoder {
             self.get_buf_mut().put_u32_at(offset, value);
         }
     }
-} // end encoder mod
+} // end encoder mod 
 
 pub mod decoder {
     use super::*;
@@ -131,4 +131,4 @@ pub mod decoder {
             self.get_buf().get_u32_at(self.offset + 2)
         }
     }
-} // end decoder mod
+} // end decoder mod 

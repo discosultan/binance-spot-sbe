@@ -3,6 +3,7 @@
 pub enum OrderSide {
     Buy = 0x0_u8,
     Sell = 0x1_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -12,6 +13,7 @@ impl From<u8> for OrderSide {
         match v {
             0x0_u8 => Self::Buy,
             0x1_u8 => Self::Sell,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -22,6 +24,7 @@ impl From<OrderSide> for u8 {
         match v {
             OrderSide::Buy => 0x0_u8,
             OrderSide::Sell => 0x1_u8,
+            OrderSide::NonRepresentable => 0xfe_u8,
             OrderSide::NullVal => 0xff_u8,
         }
     }
@@ -34,6 +37,7 @@ impl core::str::FromStr for OrderSide {
         match v {
             "Buy" => Ok(Self::Buy),
             "Sell" => Ok(Self::Sell),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -44,6 +48,7 @@ impl core::fmt::Display for OrderSide {
         match self {
             Self::Buy => write!(f, "Buy"),
             Self::Sell => write!(f, "Sell"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

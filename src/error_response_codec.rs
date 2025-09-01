@@ -146,7 +146,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for ErrorResponseDecoder<'a> {
+    impl ActingVersion for ErrorResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

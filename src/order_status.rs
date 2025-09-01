@@ -10,7 +10,8 @@ pub enum OrderStatus {
     Expired = 0x6_u8,
     ExpiredInMatch = 0x9_u8,
     PendingNew = 0xb_u8,
-    Unknown = 0xfe_u8,
+    Unknown = 0xfd_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -27,7 +28,8 @@ impl From<u8> for OrderStatus {
             0x6_u8 => Self::Expired,
             0x9_u8 => Self::ExpiredInMatch,
             0xb_u8 => Self::PendingNew,
-            0xfe_u8 => Self::Unknown,
+            0xfd_u8 => Self::Unknown,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -45,7 +47,8 @@ impl From<OrderStatus> for u8 {
             OrderStatus::Expired => 0x6_u8,
             OrderStatus::ExpiredInMatch => 0x9_u8,
             OrderStatus::PendingNew => 0xb_u8,
-            OrderStatus::Unknown => 0xfe_u8,
+            OrderStatus::Unknown => 0xfd_u8,
+            OrderStatus::NonRepresentable => 0xfe_u8,
             OrderStatus::NullVal => 0xff_u8,
         }
     }
@@ -66,6 +69,7 @@ impl core::str::FromStr for OrderStatus {
             "ExpiredInMatch" => Ok(Self::ExpiredInMatch),
             "PendingNew" => Ok(Self::PendingNew),
             "Unknown" => Ok(Self::Unknown),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -84,6 +88,7 @@ impl core::fmt::Display for OrderStatus {
             Self::ExpiredInMatch => write!(f, "ExpiredInMatch"),
             Self::PendingNew => write!(f, "PendingNew"),
             Self::Unknown => write!(f, "Unknown"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

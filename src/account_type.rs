@@ -3,6 +3,7 @@
 pub enum AccountType {
     Spot = 0x0_u8,
     Unknown = 0x2_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -12,6 +13,7 @@ impl From<u8> for AccountType {
         match v {
             0x0_u8 => Self::Spot,
             0x2_u8 => Self::Unknown,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -22,6 +24,7 @@ impl From<AccountType> for u8 {
         match v {
             AccountType::Spot => 0x0_u8,
             AccountType::Unknown => 0x2_u8,
+            AccountType::NonRepresentable => 0xfe_u8,
             AccountType::NullVal => 0xff_u8,
         }
     }
@@ -34,6 +37,7 @@ impl core::str::FromStr for AccountType {
         match v {
             "Spot" => Ok(Self::Spot),
             "Unknown" => Ok(Self::Unknown),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -44,6 +48,7 @@ impl core::fmt::Display for AccountType {
         match self {
             Self::Spot => write!(f, "Spot"),
             Self::Unknown => write!(f, "Unknown"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

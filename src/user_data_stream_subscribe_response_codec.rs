@@ -7,7 +7,7 @@ pub use crate::SBE_SCHEMA_ID;
 pub use crate::SBE_SCHEMA_VERSION;
 pub use crate::SBE_SEMANTIC_VERSION;
 
-pub const SBE_BLOCK_LENGTH: u16 = 0;
+pub const SBE_BLOCK_LENGTH: u16 = 2;
 pub const SBE_TEMPLATE_ID: u16 = 503;
 
 pub mod encoder {
@@ -64,6 +64,21 @@ pub mod encoder {
             header.version(SBE_SCHEMA_VERSION);
             header
         }
+
+        /// primitive field 'subscriptionId'
+        /// - min value: 0
+        /// - max value: 65534
+        /// - null value: 0xffff_u16
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 0
+        /// - encodedLength: 2
+        /// - version: 1
+        #[inline]
+        pub fn subscription_id(&mut self, value: u16) {
+            let offset = self.offset;
+            self.get_buf_mut().put_u16_at(offset, value);
+        }
     }
 } // end encoder
 
@@ -81,7 +96,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for UserDataStreamSubscribeResponseDecoder<'a> {
+    impl ActingVersion for UserDataStreamSubscribeResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version
@@ -141,6 +156,21 @@ pub mod decoder {
                 acting_block_length,
                 acting_version,
             )
+        }
+
+        /// primitive field - 'OPTIONAL' { null_value: '0xffff_u16' }
+        #[inline]
+        pub fn subscription_id(&self) -> Option<u16> {
+            if self.acting_version() < 1 {
+                return None;
+            }
+
+            let value = self.get_buf().get_u16_at(self.offset);
+            if value == 0xffff_u16 {
+                None
+            } else {
+                Some(value)
+            }
         }
     }
 } // end decoder

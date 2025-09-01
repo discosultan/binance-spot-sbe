@@ -477,7 +477,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for Ticker24hMiniResponseDecoder<'a> {
+    impl ActingVersion for Ticker24hMiniResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

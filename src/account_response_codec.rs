@@ -622,7 +622,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for AccountResponseDecoder<'a> {
+    impl ActingVersion for AccountResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

@@ -7,7 +7,7 @@ pub use crate::SBE_SCHEMA_ID;
 pub use crate::SBE_SCHEMA_VERSION;
 pub use crate::SBE_SEMANTIC_VERSION;
 
-pub const SBE_BLOCK_LENGTH: u16 = 76;
+pub const SBE_BLOCK_LENGTH: u16 = 108;
 pub const SBE_TEMPLATE_ID: u16 = 405;
 
 pub mod encoder {
@@ -244,6 +244,66 @@ pub mod encoder {
             self.get_buf_mut().put_i64_at(offset, value);
         }
 
+        /// primitive field 'specialCommissionMaker'
+        /// - min value: -9223372036854775807
+        /// - max value: 9223372036854775807
+        /// - null value: -9223372036854775808_i64
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 76
+        /// - encodedLength: 8
+        /// - version: 1
+        #[inline]
+        pub fn special_commission_maker(&mut self, value: i64) {
+            let offset = self.offset + 76;
+            self.get_buf_mut().put_i64_at(offset, value);
+        }
+
+        /// primitive field 'specialCommissionTaker'
+        /// - min value: -9223372036854775807
+        /// - max value: 9223372036854775807
+        /// - null value: -9223372036854775808_i64
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 84
+        /// - encodedLength: 8
+        /// - version: 1
+        #[inline]
+        pub fn special_commission_taker(&mut self, value: i64) {
+            let offset = self.offset + 84;
+            self.get_buf_mut().put_i64_at(offset, value);
+        }
+
+        /// primitive field 'specialCommissionBuyer'
+        /// - min value: -9223372036854775807
+        /// - max value: 9223372036854775807
+        /// - null value: -9223372036854775808_i64
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 92
+        /// - encodedLength: 8
+        /// - version: 1
+        #[inline]
+        pub fn special_commission_buyer(&mut self, value: i64) {
+            let offset = self.offset + 92;
+            self.get_buf_mut().put_i64_at(offset, value);
+        }
+
+        /// primitive field 'specialCommissionSeller'
+        /// - min value: -9223372036854775807
+        /// - max value: 9223372036854775807
+        /// - null value: -9223372036854775808_i64
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 100
+        /// - encodedLength: 8
+        /// - version: 1
+        #[inline]
+        pub fn special_commission_seller(&mut self, value: i64) {
+            let offset = self.offset + 100;
+            self.get_buf_mut().put_i64_at(offset, value);
+        }
+
         /// VAR_DATA ENCODER - character encoding: 'UTF-8'
         #[inline]
         pub fn symbol(&mut self, value: &str) {
@@ -280,7 +340,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for AccountCommissionResponseDecoder<'a> {
+    impl ActingVersion for AccountCommissionResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version
@@ -418,6 +478,66 @@ pub mod decoder {
         #[inline]
         pub fn discount(&self) -> i64 {
             self.get_buf().get_i64_at(self.offset + 68)
+        }
+
+        /// primitive field - 'OPTIONAL' { null_value: '-9223372036854775808_i64' }
+        #[inline]
+        pub fn special_commission_maker(&self) -> Option<i64> {
+            if self.acting_version() < 1 {
+                return None;
+            }
+
+            let value = self.get_buf().get_i64_at(self.offset + 76);
+            if value == -9223372036854775808_i64 {
+                None
+            } else {
+                Some(value)
+            }
+        }
+
+        /// primitive field - 'OPTIONAL' { null_value: '-9223372036854775808_i64' }
+        #[inline]
+        pub fn special_commission_taker(&self) -> Option<i64> {
+            if self.acting_version() < 1 {
+                return None;
+            }
+
+            let value = self.get_buf().get_i64_at(self.offset + 84);
+            if value == -9223372036854775808_i64 {
+                None
+            } else {
+                Some(value)
+            }
+        }
+
+        /// primitive field - 'OPTIONAL' { null_value: '-9223372036854775808_i64' }
+        #[inline]
+        pub fn special_commission_buyer(&self) -> Option<i64> {
+            if self.acting_version() < 1 {
+                return None;
+            }
+
+            let value = self.get_buf().get_i64_at(self.offset + 92);
+            if value == -9223372036854775808_i64 {
+                None
+            } else {
+                Some(value)
+            }
+        }
+
+        /// primitive field - 'OPTIONAL' { null_value: '-9223372036854775808_i64' }
+        #[inline]
+        pub fn special_commission_seller(&self) -> Option<i64> {
+            if self.acting_version() < 1 {
+                return None;
+            }
+
+            let value = self.get_buf().get_i64_at(self.offset + 100);
+            if value == -9223372036854775808_i64 {
+                None
+            } else {
+                Some(value)
+            }
         }
 
         /// VAR_DATA DECODER - character encoding: 'UTF-8'

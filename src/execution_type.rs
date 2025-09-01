@@ -8,7 +8,8 @@ pub enum ExecutionType {
     Trade = 0x4_u8,
     Expired = 0x5_u8,
     TradePrevention = 0x8_u8,
-    Unknown = 0xfe_u8,
+    Unknown = 0xfd_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -23,7 +24,8 @@ impl From<u8> for ExecutionType {
             0x4_u8 => Self::Trade,
             0x5_u8 => Self::Expired,
             0x8_u8 => Self::TradePrevention,
-            0xfe_u8 => Self::Unknown,
+            0xfd_u8 => Self::Unknown,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -39,7 +41,8 @@ impl From<ExecutionType> for u8 {
             ExecutionType::Trade => 0x4_u8,
             ExecutionType::Expired => 0x5_u8,
             ExecutionType::TradePrevention => 0x8_u8,
-            ExecutionType::Unknown => 0xfe_u8,
+            ExecutionType::Unknown => 0xfd_u8,
+            ExecutionType::NonRepresentable => 0xfe_u8,
             ExecutionType::NullVal => 0xff_u8,
         }
     }
@@ -58,6 +61,7 @@ impl core::str::FromStr for ExecutionType {
             "Expired" => Ok(Self::Expired),
             "TradePrevention" => Ok(Self::TradePrevention),
             "Unknown" => Ok(Self::Unknown),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -74,6 +78,7 @@ impl core::fmt::Display for ExecutionType {
             Self::Expired => write!(f, "Expired"),
             Self::TradePrevention => write!(f, "TradePrevention"),
             Self::Unknown => write!(f, "Unknown"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

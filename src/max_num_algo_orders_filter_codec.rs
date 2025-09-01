@@ -98,7 +98,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for MaxNumAlgoOrdersFilterDecoder<'a> {
+    impl ActingVersion for MaxNumAlgoOrdersFilterDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

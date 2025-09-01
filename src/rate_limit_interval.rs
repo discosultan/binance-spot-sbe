@@ -5,6 +5,7 @@ pub enum RateLimitInterval {
     Minute = 0x1_u8,
     Hour = 0x2_u8,
     Day = 0x3_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -16,6 +17,7 @@ impl From<u8> for RateLimitInterval {
             0x1_u8 => Self::Minute,
             0x2_u8 => Self::Hour,
             0x3_u8 => Self::Day,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -28,6 +30,7 @@ impl From<RateLimitInterval> for u8 {
             RateLimitInterval::Minute => 0x1_u8,
             RateLimitInterval::Hour => 0x2_u8,
             RateLimitInterval::Day => 0x3_u8,
+            RateLimitInterval::NonRepresentable => 0xfe_u8,
             RateLimitInterval::NullVal => 0xff_u8,
         }
     }
@@ -42,6 +45,7 @@ impl core::str::FromStr for RateLimitInterval {
             "Minute" => Ok(Self::Minute),
             "Hour" => Ok(Self::Hour),
             "Day" => Ok(Self::Day),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -54,6 +58,7 @@ impl core::fmt::Display for RateLimitInterval {
             Self::Minute => write!(f, "Minute"),
             Self::Hour => write!(f, "Hour"),
             Self::Day => write!(f, "Day"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

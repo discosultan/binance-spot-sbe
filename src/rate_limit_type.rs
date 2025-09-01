@@ -5,6 +5,7 @@ pub enum RateLimitType {
     Connections = 0x1_u8,
     RequestWeight = 0x2_u8,
     Orders = 0x3_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -16,6 +17,7 @@ impl From<u8> for RateLimitType {
             0x1_u8 => Self::Connections,
             0x2_u8 => Self::RequestWeight,
             0x3_u8 => Self::Orders,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -28,6 +30,7 @@ impl From<RateLimitType> for u8 {
             RateLimitType::Connections => 0x1_u8,
             RateLimitType::RequestWeight => 0x2_u8,
             RateLimitType::Orders => 0x3_u8,
+            RateLimitType::NonRepresentable => 0xfe_u8,
             RateLimitType::NullVal => 0xff_u8,
         }
     }
@@ -42,6 +45,7 @@ impl core::str::FromStr for RateLimitType {
             "Connections" => Ok(Self::Connections),
             "RequestWeight" => Ok(Self::RequestWeight),
             "Orders" => Ok(Self::Orders),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -54,6 +58,7 @@ impl core::fmt::Display for RateLimitType {
             Self::Connections => write!(f, "Connections"),
             Self::RequestWeight => write!(f, "RequestWeight"),
             Self::Orders => write!(f, "Orders"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

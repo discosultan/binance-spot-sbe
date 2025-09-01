@@ -4,6 +4,7 @@ pub enum CancelReplaceStatus {
     Success = 0x0_u8,
     Failure = 0x1_u8,
     NotAttempted = 0x2_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -14,6 +15,7 @@ impl From<u8> for CancelReplaceStatus {
             0x0_u8 => Self::Success,
             0x1_u8 => Self::Failure,
             0x2_u8 => Self::NotAttempted,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -25,6 +27,7 @@ impl From<CancelReplaceStatus> for u8 {
             CancelReplaceStatus::Success => 0x0_u8,
             CancelReplaceStatus::Failure => 0x1_u8,
             CancelReplaceStatus::NotAttempted => 0x2_u8,
+            CancelReplaceStatus::NonRepresentable => 0xfe_u8,
             CancelReplaceStatus::NullVal => 0xff_u8,
         }
     }
@@ -38,6 +41,7 @@ impl core::str::FromStr for CancelReplaceStatus {
             "Success" => Ok(Self::Success),
             "Failure" => Ok(Self::Failure),
             "NotAttempted" => Ok(Self::NotAttempted),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -49,6 +53,7 @@ impl core::fmt::Display for CancelReplaceStatus {
             Self::Success => write!(f, "Success"),
             Self::Failure => write!(f, "Failure"),
             Self::NotAttempted => write!(f, "NotAttempted"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

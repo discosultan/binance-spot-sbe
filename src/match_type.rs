@@ -3,6 +3,7 @@
 pub enum MatchType {
     AutoMatch = 0x1_u8,
     OnePartyTradeReport = 0x2_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -12,6 +13,7 @@ impl From<u8> for MatchType {
         match v {
             0x1_u8 => Self::AutoMatch,
             0x2_u8 => Self::OnePartyTradeReport,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -22,6 +24,7 @@ impl From<MatchType> for u8 {
         match v {
             MatchType::AutoMatch => 0x1_u8,
             MatchType::OnePartyTradeReport => 0x2_u8,
+            MatchType::NonRepresentable => 0xfe_u8,
             MatchType::NullVal => 0xff_u8,
         }
     }
@@ -34,6 +37,7 @@ impl core::str::FromStr for MatchType {
         match v {
             "AutoMatch" => Ok(Self::AutoMatch),
             "OnePartyTradeReport" => Ok(Self::OnePartyTradeReport),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -44,6 +48,7 @@ impl core::fmt::Display for MatchType {
         match self {
             Self::AutoMatch => write!(f, "AutoMatch"),
             Self::OnePartyTradeReport => write!(f, "OnePartyTradeReport"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

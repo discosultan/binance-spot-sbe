@@ -4,6 +4,8 @@ pub enum ListStatusType {
     Response = 0x0_u8,
     ExecStarted = 0x1_u8,
     AllDone = 0x2_u8,
+    Updated = 0x3_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -14,6 +16,8 @@ impl From<u8> for ListStatusType {
             0x0_u8 => Self::Response,
             0x1_u8 => Self::ExecStarted,
             0x2_u8 => Self::AllDone,
+            0x3_u8 => Self::Updated,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -25,6 +29,8 @@ impl From<ListStatusType> for u8 {
             ListStatusType::Response => 0x0_u8,
             ListStatusType::ExecStarted => 0x1_u8,
             ListStatusType::AllDone => 0x2_u8,
+            ListStatusType::Updated => 0x3_u8,
+            ListStatusType::NonRepresentable => 0xfe_u8,
             ListStatusType::NullVal => 0xff_u8,
         }
     }
@@ -38,6 +44,8 @@ impl core::str::FromStr for ListStatusType {
             "Response" => Ok(Self::Response),
             "ExecStarted" => Ok(Self::ExecStarted),
             "AllDone" => Ok(Self::AllDone),
+            "Updated" => Ok(Self::Updated),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -49,6 +57,8 @@ impl core::fmt::Display for ListStatusType {
             Self::Response => write!(f, "Response"),
             Self::ExecStarted => write!(f, "ExecStarted"),
             Self::AllDone => write!(f, "AllDone"),
+            Self::Updated => write!(f, "Updated"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

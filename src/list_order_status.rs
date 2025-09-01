@@ -5,6 +5,7 @@ pub enum ListOrderStatus {
     Executing = 0x1_u8,
     AllDone = 0x2_u8,
     Reject = 0x3_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -16,6 +17,7 @@ impl From<u8> for ListOrderStatus {
             0x1_u8 => Self::Executing,
             0x2_u8 => Self::AllDone,
             0x3_u8 => Self::Reject,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -28,6 +30,7 @@ impl From<ListOrderStatus> for u8 {
             ListOrderStatus::Executing => 0x1_u8,
             ListOrderStatus::AllDone => 0x2_u8,
             ListOrderStatus::Reject => 0x3_u8,
+            ListOrderStatus::NonRepresentable => 0xfe_u8,
             ListOrderStatus::NullVal => 0xff_u8,
         }
     }
@@ -42,6 +45,7 @@ impl core::str::FromStr for ListOrderStatus {
             "Executing" => Ok(Self::Executing),
             "AllDone" => Ok(Self::AllDone),
             "Reject" => Ok(Self::Reject),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -54,6 +58,7 @@ impl core::fmt::Display for ListOrderStatus {
             Self::Executing => write!(f, "Executing"),
             Self::AllDone => write!(f, "AllDone"),
             Self::Reject => write!(f, "Reject"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

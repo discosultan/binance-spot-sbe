@@ -18,6 +18,11 @@ pub enum FilterType {
     TrailingDelta = 0xe_u8,
     PercentPriceBySide = 0xf_u8,
     Notional = 0x10_u8,
+    MaxNumOrderLists = 0x11_u8,
+    ExchangeMaxNumOrderLists = 0x12_u8,
+    MaxNumOrderAmends = 0x13_u8,
+    MaxAsset = 0x14_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -42,6 +47,11 @@ impl From<u8> for FilterType {
             0xe_u8 => Self::TrailingDelta,
             0xf_u8 => Self::PercentPriceBySide,
             0x10_u8 => Self::Notional,
+            0x11_u8 => Self::MaxNumOrderLists,
+            0x12_u8 => Self::ExchangeMaxNumOrderLists,
+            0x13_u8 => Self::MaxNumOrderAmends,
+            0x14_u8 => Self::MaxAsset,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -67,6 +77,11 @@ impl From<FilterType> for u8 {
             FilterType::TrailingDelta => 0xe_u8,
             FilterType::PercentPriceBySide => 0xf_u8,
             FilterType::Notional => 0x10_u8,
+            FilterType::MaxNumOrderLists => 0x11_u8,
+            FilterType::ExchangeMaxNumOrderLists => 0x12_u8,
+            FilterType::MaxNumOrderAmends => 0x13_u8,
+            FilterType::MaxAsset => 0x14_u8,
+            FilterType::NonRepresentable => 0xfe_u8,
             FilterType::NullVal => 0xff_u8,
         }
     }
@@ -94,6 +109,11 @@ impl core::str::FromStr for FilterType {
             "TrailingDelta" => Ok(Self::TrailingDelta),
             "PercentPriceBySide" => Ok(Self::PercentPriceBySide),
             "Notional" => Ok(Self::Notional),
+            "MaxNumOrderLists" => Ok(Self::MaxNumOrderLists),
+            "ExchangeMaxNumOrderLists" => Ok(Self::ExchangeMaxNumOrderLists),
+            "MaxNumOrderAmends" => Ok(Self::MaxNumOrderAmends),
+            "MaxAsset" => Ok(Self::MaxAsset),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -119,6 +139,11 @@ impl core::fmt::Display for FilterType {
             Self::TrailingDelta => write!(f, "TrailingDelta"),
             Self::PercentPriceBySide => write!(f, "PercentPriceBySide"),
             Self::Notional => write!(f, "Notional"),
+            Self::MaxNumOrderLists => write!(f, "MaxNumOrderLists"),
+            Self::ExchangeMaxNumOrderLists => write!(f, "ExchangeMaxNumOrderLists"),
+            Self::MaxNumOrderAmends => write!(f, "MaxNumOrderAmends"),
+            Self::MaxAsset => write!(f, "MaxAsset"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

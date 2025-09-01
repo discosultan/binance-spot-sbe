@@ -8,6 +8,7 @@ pub enum OrderType {
     TakeProfit = 0x4_u8,
     TakeProfitLimit = 0x5_u8,
     LimitMaker = 0x6_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
     NullVal = 0xff_u8,
 }
@@ -22,6 +23,7 @@ impl From<u8> for OrderType {
             0x4_u8 => Self::TakeProfit,
             0x5_u8 => Self::TakeProfitLimit,
             0x6_u8 => Self::LimitMaker,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -37,6 +39,7 @@ impl From<OrderType> for u8 {
             OrderType::TakeProfit => 0x4_u8,
             OrderType::TakeProfitLimit => 0x5_u8,
             OrderType::LimitMaker => 0x6_u8,
+            OrderType::NonRepresentable => 0xfe_u8,
             OrderType::NullVal => 0xff_u8,
         }
     }
@@ -54,6 +57,7 @@ impl core::str::FromStr for OrderType {
             "TakeProfit" => Ok(Self::TakeProfit),
             "TakeProfitLimit" => Ok(Self::TakeProfitLimit),
             "LimitMaker" => Ok(Self::LimitMaker),
+            "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
@@ -69,6 +73,7 @@ impl core::fmt::Display for OrderType {
             Self::TakeProfit => write!(f, "TakeProfit"),
             Self::TakeProfitLimit => write!(f, "TakeProfitLimit"),
             Self::LimitMaker => write!(f, "LimitMaker"),
+            Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
     }

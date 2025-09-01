@@ -96,7 +96,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for ServerTimeResponseDecoder<'a> {
+    impl ActingVersion for ServerTimeResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

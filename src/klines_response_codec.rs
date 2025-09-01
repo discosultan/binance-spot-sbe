@@ -559,7 +559,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for KlinesResponseDecoder<'a> {
+    impl ActingVersion for KlinesResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

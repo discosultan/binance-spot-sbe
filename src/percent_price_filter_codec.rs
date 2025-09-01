@@ -143,7 +143,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for PercentPriceFilterDecoder<'a> {
+    impl ActingVersion for PercentPriceFilterDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version

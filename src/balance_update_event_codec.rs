@@ -7,7 +7,7 @@ pub use crate::SBE_SCHEMA_ID;
 pub use crate::SBE_SCHEMA_VERSION;
 pub use crate::SBE_SEMANTIC_VERSION;
 
-pub const SBE_BLOCK_LENGTH: u16 = 25;
+pub const SBE_BLOCK_LENGTH: u16 = 27;
 pub const SBE_TEMPLATE_ID: u16 = 601;
 
 pub mod encoder {
@@ -125,6 +125,21 @@ pub mod encoder {
             self.get_buf_mut().put_i64_at(offset, value);
         }
 
+        /// primitive field 'subscriptionId'
+        /// - min value: 0
+        /// - max value: 65534
+        /// - null value: 0xffff_u16
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 25
+        /// - encodedLength: 2
+        /// - version: 1
+        #[inline]
+        pub fn subscription_id(&mut self, value: u16) {
+            let offset = self.offset + 25;
+            self.get_buf_mut().put_u16_at(offset, value);
+        }
+
         /// VAR_DATA ENCODER - character encoding: 'UTF-8'
         #[inline]
         pub fn asset(&mut self, value: &str) {
@@ -151,7 +166,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for BalanceUpdateEventDecoder<'a> {
+    impl ActingVersion for BalanceUpdateEventDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version
@@ -240,6 +255,21 @@ pub mod decoder {
         #[inline]
         pub fn free_qty_delta(&self) -> i64 {
             self.get_buf().get_i64_at(self.offset + 17)
+        }
+
+        /// primitive field - 'OPTIONAL' { null_value: '0xffff_u16' }
+        #[inline]
+        pub fn subscription_id(&self) -> Option<u16> {
+            if self.acting_version() < 1 {
+                return None;
+            }
+
+            let value = self.get_buf().get_u16_at(self.offset + 25);
+            if value == 0xffff_u16 {
+                None
+            } else {
+                Some(value)
+            }
         }
 
         /// VAR_DATA DECODER - character encoding: 'UTF-8'

@@ -7,7 +7,7 @@ pub use crate::SBE_SCHEMA_ID;
 pub use crate::SBE_SCHEMA_VERSION;
 pub use crate::SBE_SEMANTIC_VERSION;
 
-pub const SBE_BLOCK_LENGTH: u16 = 27;
+pub const SBE_BLOCK_LENGTH: u16 = 29;
 pub const SBE_TEMPLATE_ID: u16 = 606;
 
 pub mod encoder {
@@ -129,6 +129,21 @@ pub mod encoder {
         pub fn list_order_status(&mut self, value: list_order_status::ListOrderStatus) {
             let offset = self.offset + 26;
             self.get_buf_mut().put_u8_at(offset, value as u8)
+        }
+
+        /// primitive field 'subscriptionId'
+        /// - min value: 0
+        /// - max value: 65534
+        /// - null value: 0xffff_u16
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 27
+        /// - encodedLength: 2
+        /// - version: 1
+        #[inline]
+        pub fn subscription_id(&mut self, value: u16) {
+            let offset = self.offset + 27;
+            self.get_buf_mut().put_u16_at(offset, value);
         }
 
         /// GROUP ENCODER (id=100)
@@ -311,7 +326,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for ListStatusEventDecoder<'a> {
+    impl ActingVersion for ListStatusEventDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version
@@ -407,6 +422,21 @@ pub mod decoder {
         #[inline]
         pub fn list_order_status(&self) -> list_order_status::ListOrderStatus {
             self.get_buf().get_u8_at(self.offset + 26).into()
+        }
+
+        /// primitive field - 'OPTIONAL' { null_value: '0xffff_u16' }
+        #[inline]
+        pub fn subscription_id(&self) -> Option<u16> {
+            if self.acting_version() < 1 {
+                return None;
+            }
+
+            let value = self.get_buf().get_u16_at(self.offset + 27);
+            if value == 0xffff_u16 {
+                None
+            } else {
+                Some(value)
+            }
         }
 
         /// GROUP DECODER (id=100)
@@ -525,7 +555,7 @@ pub mod decoder {
             self
         }
 
-        /// group token - Token{signal=BEGIN_GROUP, name='orders', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=8, offset=27, componentTokenCount=21, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        /// group token - Token{signal=BEGIN_GROUP, name='orders', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=8, offset=29, componentTokenCount=21, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         #[inline]
         pub fn parent(&mut self) -> SbeResult<P> {
             self.parent.take().ok_or(SbeErr::ParentNotSet)

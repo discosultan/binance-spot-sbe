@@ -7,7 +7,7 @@ pub use crate::SBE_SCHEMA_ID;
 pub use crate::SBE_SCHEMA_VERSION;
 pub use crate::SBE_SEMANTIC_VERSION;
 
-pub const SBE_BLOCK_LENGTH: u16 = 142;
+pub const SBE_BLOCK_LENGTH: u16 = 153;
 pub const SBE_TEMPLATE_ID: u16 = 302;
 
 pub mod encoder {
@@ -402,10 +402,54 @@ pub mod encoder {
         /// - semanticType: null
         /// - encodedOffset: 134
         /// - encodedLength: 8
-        /// - version: 1
+        /// - version: 0
         #[inline]
         pub fn orig_quote_order_qty(&mut self, value: i64) {
             let offset = self.offset + 134;
+            self.get_buf_mut().put_i64_at(offset, value);
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn peg_price_type(&mut self, value: peg_price_type::PegPriceType) {
+            let offset = self.offset + 142;
+            self.get_buf_mut().put_u8_at(offset, value as u8)
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn peg_offset_type(&mut self, value: peg_offset_type::PegOffsetType) {
+            let offset = self.offset + 143;
+            self.get_buf_mut().put_u8_at(offset, value as u8)
+        }
+
+        /// primitive field 'pegOffsetValue'
+        /// - min value: 0
+        /// - max value: 254
+        /// - null value: 0xff_u8
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 144
+        /// - encodedLength: 1
+        /// - version: 1
+        #[inline]
+        pub fn peg_offset_value(&mut self, value: u8) {
+            let offset = self.offset + 144;
+            self.get_buf_mut().put_u8_at(offset, value);
+        }
+
+        /// primitive field 'peggedPrice'
+        /// - min value: -9223372036854775807
+        /// - max value: 9223372036854775807
+        /// - null value: -9223372036854775808_i64
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 145
+        /// - encodedLength: 8
+        /// - version: 1
+        #[inline]
+        pub fn pegged_price(&mut self, value: i64) {
+            let offset = self.offset + 145;
             self.get_buf_mut().put_i64_at(offset, value);
         }
 
@@ -835,7 +879,7 @@ pub mod decoder {
         pub acting_version: u16,
     }
 
-    impl<'a> ActingVersion for NewOrderFullResponseDecoder<'a> {
+    impl ActingVersion for NewOrderFullResponseDecoder<'_> {
         #[inline]
         fn acting_version(&self) -> u16 {
             self.acting_version
@@ -1088,15 +1132,10 @@ pub mod decoder {
             }
         }
 
-        /// primitive field - 'OPTIONAL' { null_value: '-9223372036854775808_i64' }
+        /// primitive field - 'REQUIRED'
         #[inline]
-        pub fn prevented_quantity(&self) -> Option<i64> {
-            let value = self.get_buf().get_i64_at(self.offset + 125);
-            if value == -9223372036854775808_i64 {
-                None
-            } else {
-                Some(value)
-            }
+        pub fn prevented_quantity(&self) -> i64 {
+            self.get_buf().get_i64_at(self.offset + 125)
         }
 
         /// REQUIRED enum
@@ -1108,11 +1147,53 @@ pub mod decoder {
         /// primitive field - 'REQUIRED'
         #[inline]
         pub fn orig_quote_order_qty(&self) -> i64 {
+            self.get_buf().get_i64_at(self.offset + 134)
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn peg_price_type(&self) -> peg_price_type::PegPriceType {
             if self.acting_version() < 1 {
-                return -9223372036854775808_i64;
+                return peg_price_type::PegPriceType::default();
             }
 
-            self.get_buf().get_i64_at(self.offset + 134)
+            self.get_buf().get_u8_at(self.offset + 142).into()
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn peg_offset_type(&self) -> peg_offset_type::PegOffsetType {
+            if self.acting_version() < 1 {
+                return peg_offset_type::PegOffsetType::default();
+            }
+
+            self.get_buf().get_u8_at(self.offset + 143).into()
+        }
+
+        /// primitive field - 'OPTIONAL' { null_value: '0xff_u8' }
+        #[inline]
+        pub fn peg_offset_value(&self) -> Option<u8> {
+            if self.acting_version() < 1 {
+                return None;
+            }
+
+            let value = self.get_buf().get_u8_at(self.offset + 144);
+            if value == 0xff_u8 { None } else { Some(value) }
+        }
+
+        /// primitive field - 'OPTIONAL' { null_value: '-9223372036854775808_i64' }
+        #[inline]
+        pub fn pegged_price(&self) -> Option<i64> {
+            if self.acting_version() < 1 {
+                return None;
+            }
+
+            let value = self.get_buf().get_i64_at(self.offset + 145);
+            if value == -9223372036854775808_i64 {
+                None
+            } else {
+                Some(value)
+            }
         }
 
         /// GROUP DECODER (id=100)
@@ -1222,7 +1303,7 @@ pub mod decoder {
             self
         }
 
-        /// group token - Token{signal=BEGIN_GROUP, name='fills', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=42, offset=142, componentTokenCount=36, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        /// group token - Token{signal=BEGIN_GROUP, name='fills', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=42, offset=153, componentTokenCount=37, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         #[inline]
         pub fn parent(&mut self) -> SbeResult<P> {
             self.parent.take().ok_or(SbeErr::ParentNotSet)
