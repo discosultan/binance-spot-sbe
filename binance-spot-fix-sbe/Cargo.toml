@@ -1,0 +1,9 @@
+[package]
+name = "binance-spot-fix-sbe"
+version = "0.1.0"
+authors = ["sbetool"]
+description = "Binance Spot API FIX SBE message schema"
+edition = "2024"
+keywords = ["binance", "sbe", "spot", "fix"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/discosultan/binance-spot-sbe"
