@@ -6,10 +6,10 @@ java \
     -Dsbe.output.dir=. \
     -Dsbe.target.language=Rust \
     -jar ../simple-binary-encoding/sbe-all/build/libs/sbe-all-1.38.0-SNAPSHOT.jar \
-    spot_prod_latest.xml
+    spot_fix_prod_latest.xml
 
 # Rename package.
-mv spot_sbe binance-spot-fix-sbe
+mv fix_sbe binance-spot-fix-sbe
 cat > binance-spot-fix-sbe/Cargo.toml << 'EOF'
 [package]
 name = "binance-spot-fix-sbe"

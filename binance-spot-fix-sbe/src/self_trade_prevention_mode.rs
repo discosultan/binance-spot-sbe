@@ -1,25 +1,27 @@
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
 pub enum SelfTradePreventionMode {
-    None = 0x1_u8,
-    ExpireTaker = 0x2_u8,
-    ExpireMaker = 0x3_u8,
-    ExpireBoth = 0x4_u8,
-    Decrement = 0x5_u8,
-    NonRepresentable = 0xfe_u8,
+    None = 49_u8,
+    ExpireTaker = 50_u8,
+    ExpireMaker = 51_u8,
+    ExpireBoth = 52_u8,
+    Decrement = 53_u8,
+    Transfer = 54_u8,
+    NonRepresentable = 126_u8,
     #[default]
-    NullVal = 0xff_u8,
+    NullVal = 0_u8,
 }
 impl From<u8> for SelfTradePreventionMode {
     #[inline]
     fn from(v: u8) -> Self {
         match v {
-            0x1_u8 => Self::None,
-            0x2_u8 => Self::ExpireTaker,
-            0x3_u8 => Self::ExpireMaker,
-            0x4_u8 => Self::ExpireBoth,
-            0x5_u8 => Self::Decrement,
-            0xfe_u8 => Self::NonRepresentable,
+            49_u8 => Self::None,
+            50_u8 => Self::ExpireTaker,
+            51_u8 => Self::ExpireMaker,
+            52_u8 => Self::ExpireBoth,
+            53_u8 => Self::Decrement,
+            54_u8 => Self::Transfer,
+            126_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
@@ -28,13 +30,14 @@ impl From<SelfTradePreventionMode> for u8 {
     #[inline]
     fn from(v: SelfTradePreventionMode) -> Self {
         match v {
-            SelfTradePreventionMode::None => 0x1_u8,
-            SelfTradePreventionMode::ExpireTaker => 0x2_u8,
-            SelfTradePreventionMode::ExpireMaker => 0x3_u8,
-            SelfTradePreventionMode::ExpireBoth => 0x4_u8,
-            SelfTradePreventionMode::Decrement => 0x5_u8,
-            SelfTradePreventionMode::NonRepresentable => 0xfe_u8,
-            SelfTradePreventionMode::NullVal => 0xff_u8,
+            SelfTradePreventionMode::None => 49_u8,
+            SelfTradePreventionMode::ExpireTaker => 50_u8,
+            SelfTradePreventionMode::ExpireMaker => 51_u8,
+            SelfTradePreventionMode::ExpireBoth => 52_u8,
+            SelfTradePreventionMode::Decrement => 53_u8,
+            SelfTradePreventionMode::Transfer => 54_u8,
+            SelfTradePreventionMode::NonRepresentable => 126_u8,
+            SelfTradePreventionMode::NullVal => 0_u8,
         }
     }
 }
@@ -49,6 +52,7 @@ impl core::str::FromStr for SelfTradePreventionMode {
             "ExpireMaker" => Ok(Self::ExpireMaker),
             "ExpireBoth" => Ok(Self::ExpireBoth),
             "Decrement" => Ok(Self::Decrement),
+            "Transfer" => Ok(Self::Transfer),
             "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
@@ -63,6 +67,7 @@ impl core::fmt::Display for SelfTradePreventionMode {
             Self::ExpireMaker => write!(f, "ExpireMaker"),
             Self::ExpireBoth => write!(f, "ExpireBoth"),
             Self::Decrement => write!(f, "Decrement"),
+            Self::Transfer => write!(f, "Transfer"),
             Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }

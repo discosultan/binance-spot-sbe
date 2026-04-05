@@ -3,7 +3,7 @@ use crate::*;
 pub use decoder::MessageHeaderDecoder;
 pub use encoder::MessageHeaderEncoder;
 
-pub const ENCODED_LENGTH: usize = 8;
+pub const ENCODED_LENGTH: usize = 20;
 
 pub mod encoder {
     use super::*;
@@ -108,6 +108,38 @@ pub mod encoder {
             self
         }
 
+        /// primitive field 'seqNum'
+        /// - min value: 0
+        /// - max value: 4294967294
+        /// - null value: 0xffffffff_u32
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 8
+        /// - encodedLength: 4
+        /// - version: 0
+        #[inline]
+        pub fn seq_num(&mut self, value: u32) -> &mut Self {
+            let offset = self.offset + 8;
+            self.get_buf_mut().put_u32_at(offset, value);
+            self
+        }
+
+        /// primitive field 'sendingTime'
+        /// - min value: -9223372036854775807
+        /// - max value: 9223372036854775807
+        /// - null value: -9223372036854775808_i64
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 12
+        /// - encodedLength: 8
+        /// - version: 0
+        #[inline]
+        pub fn sending_time(&mut self, value: i64) -> &mut Self {
+            let offset = self.offset + 12;
+            self.get_buf_mut().put_i64_at(offset, value);
+            self
+        }
+
         /// Set all optional fields to their null values.
         #[inline]
         pub fn nullify_optional_fields(&mut self) -> &mut Self {
@@ -182,6 +214,18 @@ pub mod decoder {
         #[inline]
         pub fn version(&self) -> u16 {
             self.get_buf().get_u16_at(self.offset + 6)
+        }
+
+        /// primitive field - 'REQUIRED'
+        #[inline]
+        pub fn seq_num(&self) -> u32 {
+            self.get_buf().get_u32_at(self.offset + 8)
+        }
+
+        /// primitive field - 'REQUIRED'
+        #[inline]
+        pub fn sending_time(&self) -> i64 {
+            self.get_buf().get_i64_at(self.offset + 12)
         }
     }
 } // end decoder mod 

@@ -1,48 +1,48 @@
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
-pub enum PegOffsetType {
-    PriceTier = 51_u8,
-    NonRepresentable = 126_u8,
+pub enum PegMoveType {
+    Fixed = 0x1_u8,
+    NonRepresentable = 0xfe_u8,
     #[default]
-    NullVal = 0_u8,
+    NullVal = 0xff_u8,
 }
-impl From<u8> for PegOffsetType {
+impl From<u8> for PegMoveType {
     #[inline]
     fn from(v: u8) -> Self {
         match v {
-            51_u8 => Self::PriceTier,
-            126_u8 => Self::NonRepresentable,
+            0x1_u8 => Self::Fixed,
+            0xfe_u8 => Self::NonRepresentable,
             _ => Self::NullVal,
         }
     }
 }
-impl From<PegOffsetType> for u8 {
+impl From<PegMoveType> for u8 {
     #[inline]
-    fn from(v: PegOffsetType) -> Self {
+    fn from(v: PegMoveType) -> Self {
         match v {
-            PegOffsetType::PriceTier => 51_u8,
-            PegOffsetType::NonRepresentable => 126_u8,
-            PegOffsetType::NullVal => 0_u8,
+            PegMoveType::Fixed => 0x1_u8,
+            PegMoveType::NonRepresentable => 0xfe_u8,
+            PegMoveType::NullVal => 0xff_u8,
         }
     }
 }
-impl core::str::FromStr for PegOffsetType {
+impl core::str::FromStr for PegMoveType {
     type Err = ();
 
     #[inline]
     fn from_str(v: &str) -> core::result::Result<Self, Self::Err> {
         match v {
-            "PriceTier" => Ok(Self::PriceTier),
+            "Fixed" => Ok(Self::Fixed),
             "NonRepresentable" => Ok(Self::NonRepresentable),
             _ => Ok(Self::NullVal),
         }
     }
 }
-impl core::fmt::Display for PegOffsetType {
+impl core::fmt::Display for PegMoveType {
     #[inline]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            Self::PriceTier => write!(f, "PriceTier"),
+            Self::Fixed => write!(f, "Fixed"),
             Self::NonRepresentable => write!(f, "NonRepresentable"),
             Self::NullVal => write!(f, "NullVal"),
         }
