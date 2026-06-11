@@ -386,6 +386,7 @@ pub mod encoder {
             self.peg_offset_type_opt(None);
             self.peg_offset_value_opt(None);
             self.pegged_price_opt(None);
+            self.expiry_reason_opt(None);
             self
         }
     }
@@ -412,7 +413,7 @@ pub mod encoder {
 
         #[inline]
         pub const fn block_length() -> u16 {
-            151
+            152
         }
 
         #[inline]
@@ -1073,6 +1074,36 @@ pub mod encoder {
             match value {
                 Some(value) => self.pegged_price(value),
                 None => self.pegged_price(-9223372036854775808_i64),
+            };
+            self
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn expiry_reason(&mut self, value: expiry_reason::ExpiryReason) -> &mut Self {
+            let offset = self.offset + 151;
+            self.get_buf_mut().put_u8_at(offset, value as u8);
+            self
+        }
+
+        /// optional enum field 'expiryReason'
+        /// - min value: 0
+        /// - max value: 254
+        /// - null value: 0xff_u8
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 151
+        /// - encodedLength: 1
+        /// - version: 3
+        /// Set to `None` to encode the field null value.
+        #[inline]
+        pub fn expiry_reason_opt(
+            &mut self,
+            value: Option<expiry_reason::ExpiryReason>,
+        ) -> &mut Self {
+            match value {
+                Some(value) => self.expiry_reason(value),
+                None => self.expiry_reason(expiry_reason::ExpiryReason::NullVal),
             };
             self
         }
@@ -2005,7 +2036,7 @@ pub mod decoder {
             self
         }
 
-        /// group token - Token{signal=BEGIN_GROUP, name='orderReports', referencedName='null', description='null', packageName='null', id=101, version=0, deprecated=0, encodedLength=151, offset=-1, componentTokenCount=225, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        /// group token - Token{signal=BEGIN_GROUP, name='orderReports', referencedName='null', description='null', packageName='null', id=101, version=0, deprecated=0, encodedLength=152, offset=-1, componentTokenCount=239, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         #[inline]
         pub fn parent(&mut self) -> SbeResult<P> {
             self.parent.take().ok_or(SbeErr::ParentNotSet)
@@ -2280,6 +2311,16 @@ pub mod decoder {
             }
         }
 
+        /// REQUIRED enum
+        #[inline]
+        pub fn expiry_reason(&self) -> expiry_reason::ExpiryReason {
+            if self.acting_version() < 3 {
+                return expiry_reason::ExpiryReason::default();
+            }
+
+            self.get_buf().get_u8_at(self.offset + 151).into()
+        }
+
         /// GROUP DECODER (id=100)
         #[inline]
         pub fn fills_decoder(self) -> FillsDecoder<Self> {
@@ -2393,7 +2434,7 @@ pub mod decoder {
             self
         }
 
-        /// group token - Token{signal=BEGIN_GROUP, name='fills', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=42, offset=151, componentTokenCount=37, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        /// group token - Token{signal=BEGIN_GROUP, name='fills', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=42, offset=152, componentTokenCount=37, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         #[inline]
         pub fn parent(&mut self) -> SbeResult<P> {
             self.parent.take().ok_or(SbeErr::ParentNotSet)

@@ -7,7 +7,7 @@ pub use crate::SBE_SCHEMA_ID;
 pub use crate::SBE_SCHEMA_VERSION;
 pub use crate::SBE_SEMANTIC_VERSION;
 
-pub const SBE_BLOCK_LENGTH: u16 = 281;
+pub const SBE_BLOCK_LENGTH: u16 = 282;
 pub const SBE_TEMPLATE_ID: u16 = 603;
 
 pub mod encoder {
@@ -64,6 +64,7 @@ pub mod encoder {
             self.peg_offset_type_opt(None);
             self.peg_offset_value_opt(None);
             self.pegged_price_opt(None);
+            self.expiry_reason_opt(None);
             self
         }
     }
@@ -1228,6 +1229,36 @@ pub mod encoder {
             self
         }
 
+        /// REQUIRED enum
+        #[inline]
+        pub fn expiry_reason(&mut self, value: expiry_reason::ExpiryReason) -> &mut Self {
+            let offset = self.offset + 281;
+            self.get_buf_mut().put_u8_at(offset, value as u8);
+            self
+        }
+
+        /// optional enum field 'expiryReason'
+        /// - min value: 0
+        /// - max value: 254
+        /// - null value: 0xff_u8
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 281
+        /// - encodedLength: 1
+        /// - version: 3
+        /// Set to `None` to encode the field null value.
+        #[inline]
+        pub fn expiry_reason_opt(
+            &mut self,
+            value: Option<expiry_reason::ExpiryReason>,
+        ) -> &mut Self {
+            match value {
+                Some(value) => self.expiry_reason(value),
+                None => self.expiry_reason(expiry_reason::ExpiryReason::NullVal),
+            };
+            self
+        }
+
         /// VAR_DATA ENCODER - character encoding: 'UTF-8'
         #[inline]
         pub fn symbol(&mut self, value: &str) -> &mut Self {
@@ -1807,6 +1838,16 @@ pub mod decoder {
             } else {
                 Some(value)
             }
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn expiry_reason(&self) -> expiry_reason::ExpiryReason {
+            if self.acting_version() < 3 {
+                return expiry_reason::ExpiryReason::default();
+            }
+
+            self.get_buf().get_u8_at(self.offset + 281).into()
         }
 
         /// VAR_DATA DECODER - character encoding: 'UTF-8'

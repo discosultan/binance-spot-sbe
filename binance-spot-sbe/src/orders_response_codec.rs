@@ -132,6 +132,7 @@ pub mod encoder {
             self.peg_offset_type_opt(None);
             self.peg_offset_value_opt(None);
             self.pegged_price_opt(None);
+            self.expiry_reason_opt(None);
             self
         }
     }
@@ -158,7 +159,7 @@ pub mod encoder {
 
         #[inline]
         pub const fn block_length() -> u16 {
-            162
+            163
         }
 
         #[inline]
@@ -879,6 +880,36 @@ pub mod encoder {
             self
         }
 
+        /// REQUIRED enum
+        #[inline]
+        pub fn expiry_reason(&mut self, value: expiry_reason::ExpiryReason) -> &mut Self {
+            let offset = self.offset + 162;
+            self.get_buf_mut().put_u8_at(offset, value as u8);
+            self
+        }
+
+        /// optional enum field 'expiryReason'
+        /// - min value: 0
+        /// - max value: 254
+        /// - null value: 0xff_u8
+        /// - characterEncoding: null
+        /// - semanticType: null
+        /// - encodedOffset: 162
+        /// - encodedLength: 1
+        /// - version: 4
+        /// Set to `None` to encode the field null value.
+        #[inline]
+        pub fn expiry_reason_opt(
+            &mut self,
+            value: Option<expiry_reason::ExpiryReason>,
+        ) -> &mut Self {
+            match value {
+                Some(value) => self.expiry_reason(value),
+                None => self.expiry_reason(expiry_reason::ExpiryReason::NullVal),
+            };
+            self
+        }
+
         /// VAR_DATA ENCODER - character encoding: 'UTF-8'
         #[inline]
         pub fn symbol(&mut self, value: &str) -> &mut Self {
@@ -1052,7 +1083,7 @@ pub mod decoder {
             self
         }
 
-        /// group token - Token{signal=BEGIN_GROUP, name='orders', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=162, offset=0, componentTokenCount=176, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        /// group token - Token{signal=BEGIN_GROUP, name='orders', referencedName='null', description='null', packageName='null', id=100, version=0, deprecated=0, encodedLength=163, offset=0, componentTokenCount=190, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         #[inline]
         pub fn parent(&mut self) -> SbeResult<P> {
             self.parent.take().ok_or(SbeErr::ParentNotSet)
@@ -1349,6 +1380,16 @@ pub mod decoder {
             } else {
                 Some(value)
             }
+        }
+
+        /// REQUIRED enum
+        #[inline]
+        pub fn expiry_reason(&self) -> expiry_reason::ExpiryReason {
+            if self.acting_version() < 4 {
+                return expiry_reason::ExpiryReason::default();
+            }
+
+            self.get_buf().get_u8_at(self.offset + 162).into()
         }
 
         /// VAR_DATA DECODER - character encoding: 'UTF-8'

@@ -4,7 +4,7 @@
                    xmlns:xi="http://www.w3.org/2001/XInclude"
                    package="spot_sbe"
                    id="3"
-                   version="1"
+                   version="4"
                    semanticVersion="5.2"
                    description="Spot API SBE message schema"
                    byteOrder="littleEndian">
@@ -92,6 +92,7 @@
         <type name="aggTradeId" primitiveType="int64"/>
         <type name="allocId" primitiveType="int64"/>
         <type name="allocationReportId" primitiveType="int64"/>
+        <type name="blockTradeId" primitiveType="int64" sinceVersion="4"/>
         <type name="executionId" primitiveType="int64"/>
         <type name="externalSettlementId" primitiveType="int64"/>
         <type name="orderId" primitiveType="int64"/>
@@ -137,6 +138,7 @@
             <choice name="ExpireMaker" mbx:jsonValue="EXPIRE_MAKER">2</choice>
             <choice name="ExpireBoth" mbx:jsonValue="EXPIRE_BOTH">3</choice>
             <choice name="Decrement" mbx:jsonValue="DECREMENT">4</choice>
+            <choice name="Transfer" mbx:jsonValue="TRANSFER">5</choice>
             <choice name="NonRepresentable" mbx:jsonValue="NON_REPRESENTABLE">7</choice>
         </set>
 
@@ -220,6 +222,29 @@
             <validValue name="ExchangeMaxNumOrderLists" mbx:jsonValue="EXCHANGE_MAX_NUM_ORDER_LISTS">18</validValue>
             <validValue name="MaxNumOrderAmends" mbx:jsonValue="MAX_NUM_ORDER_AMENDS">19</validValue>
             <validValue name="MaxAsset" mbx:jsonValue="MAX_ASSET">20</validValue>
+            <validValue name="NonRepresentable" mbx:jsonValue="NON_REPRESENTABLE">254</validValue>
+        </enum>
+
+        <enum name="executionRuleType" encodingType="uint8" sinceVersion="3">
+            <validValue name="PriceRange" mbx:jsonValue="PRICE_RANGE">1</validValue>
+            <validValue name="NonRepresentable" mbx:jsonValue="NON_REPRESENTABLE">254</validValue>
+        </enum>
+
+        <enum name="expiryReason" encodingType="uint8" sinceVersion="3">
+            <validValue name="Rejected" mbx:jsonValue="REJECTED">1</validValue>
+            <validValue name="ExchangeCanceled" mbx:jsonValue="EXCHANGE_CANCELED">2</validValue>
+            <validValue name="OcoTrigger" mbx:jsonValue="OCO_TRIGGER">3</validValue>
+            <validValue name="OtoPhaseOneExpired" mbx:jsonValue="OTO_PHASE_ONE_EXPIRED">4</validValue>
+            <validValue name="UnfilledIocQuantityExpired" mbx:jsonValue="UNFILLED_IOC_QUANTITY_EXPIRED">5</validValue>
+            <validValue name="UnfilledFokOrderExpired" mbx:jsonValue="UNFILLED_FOK_ORDER_EXPIRED">6</validValue>
+            <validValue name="InsufficientLiquidity" mbx:jsonValue="INSUFFICIENT_LIQUIDITY">7</validValue>
+            <validValue name="ExecutionRulePriceRangeExceeded" mbx:jsonValue="EXECUTION_RULE_PRICE_RANGE_EXCEEDED">8</validValue>
+            <validValue name="NonRepresentable" mbx:jsonValue="NON_REPRESENTABLE">254</validValue>
+        </enum>
+
+        <enum name="calculationType" encodingType="uint8" sinceVersion="3">
+            <validValue name="External" mbx:jsonValue="EXTERNAL">1</validValue>
+            <validValue name="ArithmeticMean" mbx:jsonValue="ARITHMETIC_MEAN">2</validValue>
             <validValue name="NonRepresentable" mbx:jsonValue="NON_REPRESENTABLE">254</validValue>
         </enum>
 
@@ -322,6 +347,7 @@
             <validValue name="ExpireMaker" mbx:jsonValue="EXPIRE_MAKER">3</validValue>
             <validValue name="ExpireBoth" mbx:jsonValue="EXPIRE_BOTH">4</validValue>
             <validValue name="Decrement" mbx:jsonValue="DECREMENT">5</validValue>
+            <validValue name="Transfer" sinceVersion="2" mbx:jsonValue="TRANSFER">6</validValue>
             <validValue name="NonRepresentable" mbx:jsonValue="NON_REPRESENTABLE">254</validValue>
         </enum>
 
@@ -473,6 +499,15 @@
         <field id="2" name="qtyExponent" type="exponent8"/>
         <field id="3" name="maxQty" type="mantissa64" mbx:exponent="qtyExponent" mbx:jsonPath="limit"/>
         <data id="200" name="asset" type="varString8"/>
+    </sbe:message>
+
+    <sbe:message name="PriceRangeExecutionRule" id="22" sinceVersion="3">
+        <field id="1" name="ruleType" type="executionRuleType" presence="constant" valueRef="executionRuleType.PriceRange"/>
+        <field id="2" name="multiplierExponent" type="exponent8"/>
+        <field id="3" name="bidLimitMultUp" type="mantissa64" presence="optional" mbx:exponent="multiplierExponent"/>
+        <field id="4" name="bidLimitMultDown" type="mantissa64" presence="optional" mbx:exponent="multiplierExponent"/>
+        <field id="5" name="askLimitMultUp" type="mantissa64" presence="optional" mbx:exponent="multiplierExponent"/>
+        <field id="6" name="askLimitMultDown" type="mantissa64" presence="optional" mbx:exponent="multiplierExponent"/>
     </sbe:message>
 
     <!-- Endpoint responses begin here -->
@@ -642,6 +677,22 @@
                 <data id="200" name="symbol" type="varString8" mbx:jsonPath=".."/>
             </group>
             <data id="200" name="baseAsset" type="varString8"/>
+        </group>
+    </sbe:message>
+
+    <!-- Response for
+    - REST GET /api/v3/executionRules
+    - WebSocket "method":"executionRules" -->
+    <sbe:message name="ExecutionRulesResponse" id="104" sinceVersion="3">
+        <group id="100" name="symbolRules">
+            <group id="100" name="rules">
+                <!-- Contains one of
+                    - "PriceRangeExecutionRule"
+                    Use the "templateId" field from the "messageHeader" to
+                    differentiate them. -->
+                <data id="200" name="rule" type="messageData8" mbx:jsonPath=".."/>
+            </group>
+            <data id="200" name="symbol" type="varString8"/>
         </group>
     </sbe:message>
 
@@ -1026,6 +1077,43 @@
         </group>
     </sbe:message>
 
+    <!-- Response for
+        - REST GET /api/v3/referencePrice
+        - WebSocket "method":"referencePrice" -->
+    <sbe:message name="ReferencePriceResponse" id="217" sinceVersion="3">
+        <field id="1" name="priceExponent" type="exponent8"/>
+        <field id="2" name="referencePrice" type="mantissa64" mbx:exponent="priceExponent" presence="optional"/>
+        <field id="3" name="timestamp" type="utcTimestampUs"/>
+        <data id="200" name="symbol" type="varString8"/>
+    </sbe:message>
+
+    <!-- Response for
+        - REST GET /api/v3/referencePrice/calculation
+        - WebSocket "method":"referencePrice.calculation" -->
+    <sbe:message name="ReferencePriceCalculationResponse" id="218" sinceVersion="3">
+        <field id="1" name="calculationType" type="calculationType"/>
+        <field id="2" name="externalCalculationId" type="int64" presence="optional"/>
+        <field id="3" name="bucketCount" type="uint32" presence="optional"/>
+        <field id="4" name="bucketWidthMs" type="uint32" presence="optional"/>
+        <data id="200" name="symbol" type="varString8"/>
+    </sbe:message>
+
+    <!-- Response for
+    - REST GET /api/v3/historicalBlockTrades
+    - WebSocket "method":"blockTrades.historical" -->
+    <sbe:message name="BlockTradesResponse" id="219" sinceVersion="4">
+        <field id="1" name="priceExponent" type="exponent8"/>
+        <field id="2" name="qtyExponent" type="exponent8"/>
+        <group id="100" name="blockTrades" mbx:jsonPath="..">
+            <field id="1" name="id" type="blockTradeId"/>
+            <field id="2" name="price" type="mantissa64" mbx:exponent="priceExponent"/>
+            <field id="3" name="qty" type="mantissa64" mbx:exponent="qtyExponent"/>
+            <field id="4" name="quoteQty" type="mantissa64" mbx:exponent="priceExponent"/>
+            <field id="5" name="time" type="utcTimestampUs"/>
+            <field id="6" name="isBuyerMaker" type="boolEnum"/>
+        </group>
+    </sbe:message>
+
     <!-- Trading endpoints -->
     <!-- Response for
         - REST POST /api/v3/order?newOrderRespType=ACK
@@ -1077,6 +1165,7 @@
         <field id="29" name="pegOffsetType" type="pegOffsetType" presence="optional" sinceVersion="1"/>
         <field id="30" name="pegOffsetValue" type="uint8" presence="optional" sinceVersion="1"/>
         <field id="31" name="peggedPrice" type="mantissa64" presence="optional" sinceVersion="1" mbx:exponent="priceExponent"/>
+        <field id="32" name="expiryReason" type="expiryReason" presence="optional" sinceVersion="3"/>
         <data id="200" name="symbol" type="varString8"/>
         <data id="201" name="clientOrderId" type="varString8"/>
     </sbe:message>
@@ -1118,6 +1207,7 @@
         <field id="29" name="pegOffsetType" type="pegOffsetType" presence="optional" sinceVersion="1"/>
         <field id="30" name="pegOffsetValue" type="uint8" presence="optional" sinceVersion="1"/>
         <field id="31" name="peggedPrice" type="mantissa64" presence="optional" sinceVersion="1" mbx:exponent="priceExponent"/>
+        <field id="32" name="expiryReason" type="expiryReason" presence="optional" sinceVersion="3"/>
 
         <group id="100" name="fills">
             <field id="1" name="commissionExponent" type="exponent8"/>
@@ -1188,6 +1278,7 @@
         <field id="31" name="pegOffsetType" type="pegOffsetType" presence="optional" sinceVersion="1"/>
         <field id="32" name="pegOffsetValue" type="uint8" presence="optional" sinceVersion="1"/>
         <field id="33" name="peggedPrice" type="mantissa64" presence="optional" sinceVersion="1" mbx:exponent="priceExponent"/>
+        <field id="34" name="expiryReason" type="expiryReason" presence="optional" sinceVersion="4"/>
         <data id="200" name="symbol" type="varString8"/>
         <data id="201" name="clientOrderId" type="varString8"/>
     </sbe:message>
@@ -1304,6 +1395,7 @@
             <field id="31" name="pegOffsetType" type="pegOffsetType" presence="optional" sinceVersion="1"/>
             <field id="32" name="pegOffsetValue" type="uint8" presence="optional" sinceVersion="1"/>
             <field id="33" name="peggedPrice" type="mantissa64" presence="optional" sinceVersion="1" mbx:exponent="priceExponent"/>
+            <field id="34" name="expiryReason" type="expiryReason" presence="optional" sinceVersion="4"/>
             <data id="200" name="symbol" type="varString8"/>
             <data id="201" name="clientOrderId" type="varString8"/>
         </group>
@@ -1393,6 +1485,7 @@
             <field id="27" name="pegOffsetType" type="pegOffsetType" presence="optional" sinceVersion="1"/>
             <field id="28" name="pegOffsetValue" type="uint8" presence="optional" sinceVersion="1"/>
             <field id="29" name="peggedPrice" type="mantissa64" presence="optional" sinceVersion="1" mbx:exponent="priceExponent"/>
+            <field id="30" name="expiryReason" type="expiryReason" presence="optional" sinceVersion="3"/>
             <data id="200" name="symbol" type="varString8"/>
             <data id="201" name="clientOrderId" type="varString8"/>
         </group>
@@ -1453,6 +1546,7 @@
             <field id="27" name="pegOffsetType" type="pegOffsetType" presence="optional" sinceVersion="1"/>
             <field id="28" name="pegOffsetValue" type="uint8" presence="optional" sinceVersion="1"/>
             <field id="29" name="peggedPrice" type="mantissa64" presence="optional" sinceVersion="1" mbx:exponent="priceExponent"/>
+            <field id="30" name="expiryReason" type="expiryReason" presence="optional" sinceVersion="3"/>
 
             <group id="100" name="fills">
                 <field id="1" name="commissionExponent" type="exponent8"/>
@@ -1867,21 +1961,21 @@
 
     <!-- User data stream endpoints -->
     <!-- Response for
-        - REST POST /api/v3/userDataStream
-        - WebSocket "method":"userDataStream.start" -->
+        - REST POST /api/v3/userDataStream (RETIRED)
+        - WebSocket "method":"userDataStream.start" (RETIRED)-->
     <sbe:message name="UserDataStreamStartResponse" id="500">
         <data id="200" name="listenKey" type="varString8"/>
     </sbe:message>
 
     <!-- Response for
-        - REST PUT /api/v3/userDataStream
-        - WebSocket "method":"userDataStream.ping" -->
+        - REST PUT /api/v3/userDataStream (RETIRED)
+        - WebSocket "method":"userDataStream.ping" (RETIRED) -->
     <sbe:message name="UserDataStreamPingResponse" id="501">
     </sbe:message>
 
     <!-- Response for
-        - REST DELETE /api/v3/userDataStream
-        - WebSocket "method":"userDataStream.stop" -->
+        - REST DELETE /api/v3/userDataStream (RETIRED)
+        - WebSocket "method":"userDataStream.stop" (RETIRED)-->
     <sbe:message name="UserDataStreamStopResponse" id="502">
     </sbe:message>
 
@@ -1901,6 +1995,36 @@
     </sbe:message>
 
     <!-- User data stream events -->
+
+    <!-- "allocationReport" -->
+    <sbe:message name="AllocationReportEvent" id="600">
+        <field id="1" name="eventTime" type="utcTimestampUs" mbx:jsonPath="E"/>
+        <field id="2" name="transactTime" type="utcTimestampUs" mbx:jsonPath="T"/>
+        <field id="3" name="priceExponent" type="exponent8"/>
+        <field id="4" name="qtyExponent" type="exponent8"/>
+        <field id="5" name="commissionExponent" type="exponent8"/>
+        <field id="6" name="allocationTransactionType" type="allocationTransactionType" mbx:jsonPath="x"/>
+        <field id="7" name="allocationReportType" type="allocationReportType" mbx:jsonPath="r"/>
+        <field id="8" name="allocationStatus" type="allocationStatus" mbx:jsonPath="X"/>
+        <field id="9" name="side" type="orderSide" mbx:jsonPath="S"/>
+        <field id="10" name="counterPartyRole" type="counterPartyRole" mbx:jsonPath="P"/>
+        <field id="11" name="counterPartyExternalAccountId" type="int64" mbx:jsonPath="h"/>
+        <field id="12" name="counterPartyOrderId" type="orderId" mbx:jsonPath="I"/>
+        <field id="13" name="allocationReportId" type="allocationReportId" mbx:jsonPath="R"/>
+        <field id="14" name="allocationId" type="allocId" mbx:jsonPath="a"/>
+        <field id="15" name="sourceOrderId" type="orderId" mbx:jsonPath="i"/>
+        <field id="16" name="sourceOrderListId" type="orderId" presence="optional" mbx:jsonDefaultValue="-1" mbx:jsonPath="g"/>
+        <field id="17" name="sourceTradeId" type="tradeId" presence="optional" mbx:jsonPath="t"/>
+        <field id="18" name="sourceAllocationId" type="allocId" presence="optional" mbx:jsonPath="Sa"/>
+        <field id="19" name="price" type="mantissa64" mbx:exponent="priceExponent" mbx:jsonPath="p"/>
+        <field id="20" name="qty" type="mantissa64" mbx:exponent="qtyExponent" mbx:jsonPath="q"/>
+        <field id="21" name="quoteQty" type="mantissa64" mbx:exponent="priceExponent" mbx:jsonPath="Q"/>
+        <field id="22" name="commission" type="mantissa64" mbx:exponent="commissionExponent" mbx:jsonPath="n"/>
+        <field id="23" name="subscriptionId" type="subscriptionId" presence="optional" sinceVersion="1"/>
+        <data id="200" name="symbol" type="varString8" mbx:jsonPath="s"/>
+        <data id="201" name="commissionAsset" type="optionalVarString8" mbx:jsonPath="N"/>
+        <data id="202" name="sourceSymbol" type="optionalVarString8" mbx:jsonPath="Ss"/>
+    </sbe:message>
 
     <!-- "balanceUpdate" -->
     <sbe:message name="BalanceUpdateEvent" id="601">
@@ -1973,6 +2097,7 @@
         <field id="51" name="pegOffsetType" type="pegOffsetType" presence="optional" sinceVersion="1" mbx:jsonPath="gOT"/>
         <field id="52" name="pegOffsetValue" type="uint8" presence="optional" sinceVersion="1" mbx:jsonPath="gOV"/>
         <field id="53" name="peggedPrice" type="mantissa64" presence="optional" sinceVersion="1" mbx:exponent="priceExponent" mbx:jsonPath="gp"/>
+        <field id="54" name="expiryReason" type="expiryReason" presence="optional" sinceVersion="3" mbx:jsonPath="eR"/>
         <data id="200" name="symbol" type="varString8" mbx:jsonPath="s"/>
         <data id="201" name="clientOrderId" type="varString8" mbx:jsonPath="c"/>
         <data id="202" name="origClientOrderId" type="optionalVarString8" mbx:jsonDefaultValue="" mbx:jsonPath="C"/>
@@ -2021,6 +2146,11 @@
             <field id="3" name="locked" type="mantissa64" mbx:exponent="exponent" mbx:jsonPath="l"/>
             <data id="200" name="asset" type="varString8" mbx:jsonPath="a"/>
         </group>
+    </sbe:message>
+
+    <!-- "serverShutdown" -->
+    <sbe:message name="ServerShutdownEvent" id="610" sinceVersion="3">
+        <field id="1" name="eventTime" type="utcTimestampUs" mbx:jsonPath="E"/>
     </sbe:message>
 
     <!-- A message that cannot be represented at this schema ID and version.
